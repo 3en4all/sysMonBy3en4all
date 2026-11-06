@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>monitor3EN - szkic</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--surface-0:#F1EFE8;--surface-1:#F7F6F2;--surface-2:#FFFFFF;--border:rgba(0,0,0,.1);--border-strong:rgba(0,0,0,.2);--text-primary:#1F1F1E;--text-secondary:#5F5E5A;--text-muted:#888780;--text-accent:#185FA5;--text-danger:#A32D2D;--text-warning:#854F0B;--radius:8px}
+@media (prefers-color-scheme:dark){:root{--surface-0:#1A1A19;--surface-1:#242423;--surface-2:#2C2C2A;--border:rgba(255,255,255,.1);--border-strong:rgba(255,255,255,.2);--text-primary:#F1EFE8;--text-secondary:#B4B2A9;--text-muted:#888780;--text-accent:#85B7EB;--text-danger:#F09595;--text-warning:#EF9F27}}
+body{margin:0;padding:16px;background:var(--surface-0);color:var(--text-primary);font-family:"Segoe UI",system-ui,sans-serif}
+.note{max-width:1100px;margin:0 auto 8px;font-size:12px;color:var(--text-secondary)}
+.dk{position:relative;max-width:1100px;margin:0 auto;background:var(--surface-0);border-radius:12px;padding:8px 8px 44px}
+.win{background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:var(--radius);overflow:hidden}
+.tb{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 8px;border-bottom:0.5px solid var(--border);color:var(--text-secondary)}
+.tb .ic{display:flex;gap:10px;font-size:15px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px;padding:6px}
+.t,.p{background:var(--surface-1);border-radius:6px;padding:6px 8px}
+.h{display:flex;justify-content:space-between;font-size:12px}
+.h b{font-weight:500}.h span{color:var(--text-secondary)}
+.sub{font-size:11px;color:var(--text-muted)}
+.r{display:grid;grid-template-columns:minmax(0,1fr) 30px 52px;gap:6px;align-items:center;font-size:12px;line-height:1.5}
+.r span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r span:last-child{text-align:right;color:var(--text-secondary)}
+.bb{height:3px;background:var(--border);border-radius:2px}.bb i{display:block;height:3px;border-radius:2px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:6px;padding:0 6px 6px}
+.ph{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-bottom:2px}
+.sr,.ev{display:grid;gap:8px;align-items:center;font-size:12px;line-height:1.9;border-top:0.5px solid var(--border)}
+.sr{grid-template-columns:8px minmax(0,1fr) 44px 14px;cursor:pointer}
+.ev{grid-template-columns:16px 38px minmax(0,1fr) auto}
+.dot{width:7px;height:7px;border-radius:50%}
+.el{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cnt{font-size:11px;padding:0 6px;border-radius:6px;background:var(--surface-2);color:var(--text-secondary)}
+.toast{position:absolute;right:14px;bottom:52px;width:270px;background:#2C2C2A;border:0.5px solid #5F5E5A;border-radius:var(--radius);padding:10px 12px;color:#F1EFE8;font-size:13px;line-height:1.5}
+.toast button{font:inherit;font-size:12px;background:#444441;color:#F1EFE8;border:0;border-radius:6px;padding:4px 8px}
+.task{position:absolute;left:0;right:0;bottom:0;height:36px;background:#202020;border-radius:0 0 12px 12px;display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:0 14px;color:#B4B2A9;font-size:12px}
+@media (max-width:600px){.toast{position:static;width:auto;margin:8px 0}}
+</style>
+</head>
+<body>
+<p class="note">Szkic wyglądu monitor3EN v1 (2026-11-05). Wartości w kafelkach i zdarzeniach są przykładowe; porty i procesy serwerów wzięte z 3EN035.</p>
+<div class="dk">
+<div class="win">
+<div class="tb"><span><i class="ti ti-activity"></i> Monitor · 3EN035</span><span class="ic"><i class="ti ti-pin" style="color:var(--text-accent)" title="Zawsze na wierzchu"></i><i class="ti ti-settings" title="Ustawienia"></i><span>— ▢ ✕</span></span></div>
+<div class="g" id="g"></div>
+<div class="two">
+<div class="p"><div class="ph"><span>Serwery · kliknij, żeby otworzyć podgląd</span><span style="color:var(--text-muted)">+8 systemowych</span></div><div id="s"></div></div>
+<div class="p"><div class="ph"><span>Zdarzenia · 24 h</span><span style="color:var(--text-muted)">wyciszone 203</span></div><div id="e"></div></div>
+</div>
+</div>
+<div class="toast">
+<div style="display:flex;justify-content:space-between;font-size:11px;color:#B4B2A9;margin-bottom:4px"><span><i class="ti ti-activity"></i> Monitor · błąd</span><span>teraz ✕</span></div>
+<div style="font-weight:500">Sterownik NVIDIA zgłosił błąd</div>
+<div style="color:#B4B2A9;font-size:12px;margin-bottom:8px">nvlddmkm 153 · 3 razy w 15 min</div>
+<div style="display:flex;gap:6px"><button>Szczegóły</button><button>Nie powiadamiaj o tym</button></div>
+</div>
+<div class="task"><i class="ti ti-chevron-up"></i>
+<svg width="18" height="18" viewBox="0 0 16 16" aria-label="Ikona w zasobniku"><rect x="1" y="12.3" width="4" height="3.7" fill="#1D9E75"/><rect x="6" y="9.4" width="4" height="6.6" fill="#7F77DD"/><rect x="11" y="11" width="4" height="5" fill="#378ADD"/></svg>
+<i class="ti ti-wifi"></i><i class="ti ti-volume"></i><span>14:32</span></div>
+</div>
+<script>
+const T=[['CPU','#1D9E75','23%','Ryzen · 65 W',[['chrome',8.1,'%'],['obs64',5.4,'%'],['Code',3.2,'%'],['Discord',1.9,'%'],['explorer',0.8,'%']]],
+['GPU','#7F77DD','41%','RTX 3060 · 142 W',[['obs64',18,'%'],['chrome',9,'%'],['dwm',6,'%'],['Resolve',5,'%'],['Discord',2,'%']]],
+['RAM','#D85A30','13,8/24 GB','57% zajęte',[['chrome',3.1,'GB'],['Code',1.4,'GB'],['obs64',0.9,'GB'],['Discord',0.6,'GB'],['Teams',0.5,'GB']]],
+['VRAM','#D4537E','5,2/12 GB','43% zajęte',[['Resolve',2.1,'GB'],['obs64',1.0,'GB'],['ollama',0.9,'GB'],['chrome',0.7,'GB'],['dwm',0.4,'GB']]],
+['Sieć','#378ADD','↓12 Mb/s','↑ 1,8 Mb/s',[['chrome',8.2,'Mb'],['OneDrive',2.1,'Mb'],['Discord',0.9,'Mb'],['steam',0.6,'Mb'],['svchost',0.2,'Mb']]],
+['Dyski','#BA7517','21 MB/s','wolne: C 41% · D 63%',[['OneDrive',14,'MB'],['MsMpEng',6,'MB'],['chrome',1.2,'MB'],['Code',0.4,'MB'],['explorer',0.1,'MB']]],
+['Temperatury','#E24B4A','CPU 62°','GPU 58°',[['CPU',62,'°C'],['GPU hotspot',71,'°C'],['NVMe C',44,'°C'],['NVMe D',41,'°C'],['Płyta',38,'°C']]],
+['Wentylatory','#888780','1240 rpm','5 czujników',[['CPU',1240,''],['Tył',920,''],['Przód 1',860,''],['Przód 2',860,''],['GPU',0,'']]]];
+const g=document.getElementById('g'),H=[];
+T.forEach(([n,c,v,sub,top],k)=>{const mx=Math.max(...top.map(x=>x[1]))||1;H[k]=Array(41).fill(15);
+g.insertAdjacentHTML('beforeend',`<div class="t"><div class="h"><b>${n}</b><span>${v}</span></div><div class="sub">${sub}</div><svg viewBox="0 0 120 30" preserveAspectRatio="none" style="width:100%;height:30px;display:block;margin:3px 0 4px"><polygon id="a${k}" fill="${c}" fill-opacity="0.15"/><polyline id="p${k}" fill="none" stroke="${c}" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg>${top.map(([a,x,u])=>`<div class="r"><span>${a}</span><div class="bb"><i style="width:${Math.round(x/mx*100)}%;background:${c}"></i></div><span>${String(x).replace('.',',')}${u?' '+u:''}</span></div>`).join('')}</div>`)});
+function tick(){H.forEach((h,k)=>{h.shift();h.push(Math.max(3,Math.min(27,h[h.length-1]+(Math.random()-0.5)*7)));const p=h.map((y,i)=>`${i*3},${y.toFixed(1)}`).join(' ');document.getElementById('p'+k).setAttribute('points',p);document.getElementById('a'+k).setAttribute('points','0,30 '+p+' 120,30')})}
+for(let i=0;i<41;i++)tick();setInterval(tick,1000);
+const S=[['#1D9E75','Ollama · 3 instancje · model z /api/ps','11441'],['#1D9E75','n8n (do potwierdzenia)','5678'],['#1D9E75','OpenClaw (do potwierdzenia)','18789'],['#1D9E75','pythonw · skrypt z linii poleceń','8765'],['#1D9E75','Docker Desktop','5680'],['#BA7517','usbipd · widoczny w sieci','3240']];
+document.getElementById('s').innerHTML=S.map(([c,n,p])=>`<div class="sr"><span class="dot" style="background:${c}"></span><span class="el">${n}</span><span style="font-family:Consolas,monospace;color:var(--text-secondary)">${p}</span><i class="ti ti-terminal-2" style="color:var(--text-muted)"></i></div>`).join('');
+const E=[['ti-alert-octagon','var(--text-danger)','14:31','Sterownik NVIDIA zgłosił błąd','×3'],['ti-alert-circle','var(--text-danger)','12:05','Błąd dysku KINGSTON SA400','×1147'],['ti-alert-circle','var(--text-danger)','10:48','Program zamknął się z błędem',''],['ti-bolt','var(--text-danger)','08:33','Komputer wyłączył się nieoczekiwanie',''],['ti-alert-triangle','var(--text-warning)','08:34','Urządzenie USB: problem z instalacją','×8'],['ti-alert-triangle','var(--text-warning)','07:12','Google Drive: ostrzeżenie','×2']];
+document.getElementById('e').innerHTML=E.map(([i,c,t,m,k])=>`<div class="ev"><i class="ti ${i}" style="color:${c}"></i><span style="color:var(--text-secondary)">${t}</span><span class="el">${m}</span>${k?`<span class="cnt">${k}</span>`:'<span></span>'}</div>`).join('');
+</script>
+</body>
+</html>
