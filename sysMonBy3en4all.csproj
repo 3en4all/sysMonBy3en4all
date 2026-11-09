@@ -2,15 +2,19 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- 10.0.19041 = API WinRT (StartupTask w pakiecie MSIX) -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Version>0.7.0</Version>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>sysMonBy3en4all</AssemblyName>
     <RootNamespace>SysMon</RootNamespace>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <!-- runtime .NET 10 jest na 3EN035, więc exe bez wbudowanego runtime (mały plik) -->
-    <SelfContained>false</SelfContained>
+    <!-- runtime w środku: Store/czysty komputer nie ma .NET 10 -->
+    <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- natywne dll zależności LHM w środku exe, żeby został jeden plik -->

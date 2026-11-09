@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Identity Name/Publisher i PublisherDisplayName przepisać z Partner Center: Product management → Product identity. -->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap desktop rescap">
+
+  <Identity Name="UZUPELNIJ.sysMonBy3en4all" Publisher="CN=UZUPELNIJ-Z-PARTNER-CENTER" Version="0.7.0.0" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>sysMonBy3en4all</DisplayName>
+    <PublisherDisplayName>3en4all</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="pl-PL" />
+  </Resources>
+
+  <Applications>
+    <Application Id="sysMonBy3en4all" Executable="sysMonBy3en4all.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="sysMonBy3en4all" Description="Monitor zasobów, serwerów i zdarzeń Windows na jednym ekranie"
+        BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <desktop:Extension Category="windows.startupTask" Executable="sysMonBy3en4all.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="sysMonStart" Enabled="false" DisplayName="sysMonBy3en4all" />
+        </desktop:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <!-- tylko na żądanie użytkownika (Opcje → Uruchom jako administrator): czujniki temperatur/wentylatorów przez PawnIO i SMART -->
+    <rescap:Capability Name="allowElevation" />
+  </Capabilities>
+</Package>

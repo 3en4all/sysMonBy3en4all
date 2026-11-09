@@ -1,0 +1,12 @@
+sysMonBy3en4all — składniki zewnętrzne
+
+LibreHardwareMonitorLib 0.9.6
+  Licencja: Mozilla Public License 2.0 (https://www.mozilla.org/MPL/2.0/)
+  Kod źródłowy: https://github.com/LibreHardwareMonitor/LibreHardwareMonitor
+  Biblioteka używana bez zmian.
+
+.NET 10 Runtime (dołączony do pakietu)
+  Licencja: MIT (https://github.com/dotnet/runtime/blob/main/LICENSE.TXT)
+
+Sterownik PawnIO NIE jest częścią pakietu. Użytkownik instaluje go sam ze strony https://pawnio.eu,
+jeśli chce odczytu temperatur, wentylatorów i poboru mocy.

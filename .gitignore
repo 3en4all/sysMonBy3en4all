@@ -5,3 +5,6 @@ HANDOFF*.md
 pomiar.ps1
 *.user
 .vs/
+pakiet/uklad/
+*.msix
+pakiet/wack-raport.xml

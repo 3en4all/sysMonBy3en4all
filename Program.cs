@@ -26,7 +26,11 @@ static class Program
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.CurrentCulture = new CultureInfo("pl-PL");
         if (args.Length == 2 && args[0] == "--czujniki") { Czujniki.Zrzut(args[1]); return; }
         // Jeden egzemplarz: drugi start (np. ręczny przy autostarcie) tylko pokazuje działające okno.
-        jedenEgzemplarz = new Mutex(true, @"Local\sysMonBy3en4all", out bool pierwszy);
+        jedenEgzemplarz = new Mutex(false, @"Local\sysMonBy3en4all");
+        bool pierwszy;
+        // --restart: poprzedni egzemplarz właśnie się zamyka (przejście na administratora)
+        try { pierwszy = jedenEgzemplarz.WaitOne(args.Contains("--restart") ? 10000 : 0); }
+        catch (AbandonedMutexException) { pierwszy = true; }
         if (!pierwszy) { PostMessage((IntPtr)0xFFFF, WM_POKAZ, IntPtr.Zero, IntPtr.Zero); return; } // HWND_BROADCAST
         var app = new Application();
         if ((Probnik.Samotest() ?? Alerty.Samotest()) is string blad)
@@ -278,7 +282,7 @@ sealed class OknoGlowne : Window
             }
             else
             {
-                string stan = czujniki.IsFaulted ? "czujniki niedostępne (LHM/PawnIO)" : "uruchamianie czujników…";
+                string stan = czujniki.IsFaulted ? czujniki.Exception!.GetBaseException() is InvalidOperationException io ? io.Message : "czujniki niedostępne (LHM/PawnIO)" : "uruchamianie czujników…";
                 temperatury.Ustaw("—", stan, 0, [], v => "");
                 wentylatory.Ustaw("—", stan, 0, [], v => "");
             }
@@ -464,8 +468,15 @@ sealed class OknoGlowne : Window
             c.Click += (_, _) => { zmiana(c.IsChecked == true); ust.Zapisz(); };
             return c;
         }
+        if (!Czujniki.Admin)
+        {
+            var admin = Ikona("", "Temperatury, wentylatory, waty i SMART wymagają administratora i sterownika PawnIO", UruchomJakoAdmin);
+            admin.Inlines.Add(new System.Windows.Documents.Run(" Uruchom jako administrator (czujniki)") { FontFamily = FontFamily, FontSize = 12 });
+            admin.Foreground = Kolory.Akcent; admin.Margin = new Thickness(0, 2, 16, 2);
+            panelOpcji.Children.Add(admin);
+        }
         panelOpcji.Children.Add(Opcja("Zawsze na wierzchu", ust.NaWierzchu, UstawNaWierzchu));
-        panelOpcji.Children.Add(autostart = Opcja("Start z Windows (Harmonogram zadań, bez UAC)", false, UstawAutostart));
+        panelOpcji.Children.Add(autostart = Opcja(Autostart.Pakiet ? "Start z Windows" : "Start z Windows (Harmonogram zadań, wymaga administratora)", false, UstawAutostart));
         autostart.IsEnabled = false;
         Task.Run(Autostart.Wlaczony).ContinueWith(t => Dispatcher.BeginInvoke(() => { autostart.IsChecked = t.IsCompletedSuccessfully && t.Result; autostart.IsEnabled = true; }));
         panelOpcji.Children.Add(Opcja("Ikona w zasobniku (minimalizacja chowa okno)", ust.Zasobnik, v =>
@@ -502,6 +513,13 @@ sealed class OknoGlowne : Window
         return w;
     }
 
+    void UruchomJakoAdmin()
+    {
+        try { Process.Start(new ProcessStartInfo(Environment.ProcessPath!, "--restart") { UseShellExecute = true, Verb = "runas" }); }
+        catch (System.ComponentModel.Win32Exception) { return; } // UAC anulowane — zostajemy bez czujników
+        Close();
+    }
+
     void UstawAutostart(bool wlacz)
     {
         autostart!.IsEnabled = false;
@@ -511,7 +529,7 @@ sealed class OknoGlowne : Window
             if ((t.IsFaulted ? t.Exception!.GetBaseException().Message : t.Result) is string blad)
             {
                 autostart.IsChecked = !wlacz;
-                MessageBox.Show(this, "Harmonogram zadań odmówił: " + blad, "sysMonBy3en4all", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(this, "Nie udało się ustawić autostartu: " + blad, "sysMonBy3en4all", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }));
     }

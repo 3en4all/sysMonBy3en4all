@@ -1,6 +1,6 @@
 # sysMonBy3en4all
 
-Lightweight Windows resource and server monitor (.NET 10, WinForms), ~220 MB RAM, ~0.3% CPU.
+Lightweight Windows resource and server monitor (.NET 10, WPF), ~220 MB RAM, ~0.3% CPU.
 
 ![window](okno.png)
 
@@ -16,6 +16,8 @@ Lightweight Windows resource and server monitor (.NET 10, WinForms), ~220 MB RAM
 ```
 dotnet build -c Release
 ```
-Requires Windows and .NET 10 SDK. Sensor access needs administrator rights.
+Requires Windows and .NET 10 SDK. Starts without administrator rights; temperatures, fans, power and SMART need administrator (Options → run as administrator) and the PawnIO driver (https://pawnio.eu).
+
+MSIX package for Microsoft Store: `pakiet\buduj.ps1` (fill Identity in `pakiet\Package.appxmanifest` from Partner Center first). Third-party licenses: `pakiet\THIRD-PARTY-NOTICES.txt`.
 
 Author: Jacek Grodnicki (3en4all)

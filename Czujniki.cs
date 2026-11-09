@@ -14,7 +14,17 @@ sealed class Czujniki
         IsMemoryEnabled = false, IsNetworkEnabled = false, IsBatteryEnabled = false, IsPsuEnabled = false,
     };
 
-    public Czujniki() => komputer.Open();
+    public static bool Admin => new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent())
+        .IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+
+    public Czujniki()
+    {
+        // komunikaty trafiają do kafelków Temperatury/Wentylatory
+        if (!Admin) throw new InvalidOperationException("czujniki: uruchom jako administrator (Opcje)");
+        if (Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\PawnIO") == null)
+            throw new InvalidOperationException("czujniki: brak sterownika PawnIO (pawnio.eu)");
+        komputer.Open();
+    }
 
     public void Odswiez()
     {

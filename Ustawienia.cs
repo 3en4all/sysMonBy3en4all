@@ -45,10 +45,33 @@ sealed class Ustawienia
     }
 }
 
-/// Start z Windows przez Harmonogram zadań z najwyższymi uprawnieniami (wpis Run w rejestrze dawałby UAC przy każdym logowaniu).
+/// Start z Windows. Pakiet MSIX (Store): StartupTask z manifestu pakietu, bez administratora.
+/// Bez pakietu: Harmonogram zadań z najwyższymi uprawnieniami (tworzenie wymaga administratora).
 static class Autostart
 {
     const string Zadanie = "sysMonBy3en4all";
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+    static extern int GetCurrentPackageFullName(ref int dlugosc, System.Text.StringBuilder? nazwa);
+    public static readonly bool Pakiet = PakietSprawdz();
+    static bool PakietSprawdz() { int d = 0; return GetCurrentPackageFullName(ref d, null) != 15700; } // 15700 = APPMODEL_ERROR_NO_PACKAGE
+
+    static Windows.ApplicationModel.StartupTask ZadaniePakietu() => Windows.ApplicationModel.StartupTask.GetAsync("sysMonStart").AsTask().Result;
+
+    public static bool Wlaczony() => Pakiet
+        ? ZadaniePakietu().State is Windows.ApplicationModel.StartupTaskState.Enabled or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy
+        : Schtasks($"/Query /TN \"{Zadanie}\"").Kod == 0;
+
+    /// Zwraca null przy sukcesie, inaczej komunikat błędu.
+    public static string? Ustaw(bool wlacz)
+    {
+        if (!Pakiet) return UstawZadanie(wlacz);
+        var z = ZadaniePakietu();
+        if (!wlacz) { z.Disable(); return null; }
+        var s = z.RequestEnableAsync().AsTask().Result;
+        return s is Windows.ApplicationModel.StartupTaskState.Enabled or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy
+            ? null : "Windows nie pozwolił (Ustawienia → Aplikacje → Uruchamianie): " + s;
+    }
 
     static (int Kod, string Wyjscie) Schtasks(string argumenty)
     {
@@ -59,10 +82,7 @@ static class Autostart
         return (p.ExitCode, wyj.Trim());
     }
 
-    public static bool Wlaczony() => Schtasks($"/Query /TN \"{Zadanie}\"").Kod == 0;
-
-    /// Zwraca null przy sukcesie, inaczej komunikat błędu.
-    public static string? Ustaw(bool wlacz)
+    static string? UstawZadanie(bool wlacz)
     {
         if (!wlacz) { var (k, w) = Schtasks($"/Delete /TN \"{Zadanie}\" /F"); return k == 0 ? null : w; }
         string uzytkownik = SecurityElement.Escape($@"{Environment.UserDomainName}\{Environment.UserName}");
